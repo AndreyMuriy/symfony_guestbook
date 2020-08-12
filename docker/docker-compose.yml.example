@@ -1,0 +1,76 @@
+version: '3.7'
+
+services:
+  symfony_node:
+    image: node:14.7.0-alpine3.10
+    container_name: symfony_node
+    working_dir: /app
+    volumes:
+      - '../:/app'
+    ports:
+      - '3000:3000'
+    networks:
+      symfony_net:
+
+  symfony_nginx:
+    image: nginx:1.18.0
+    restart: always
+    container_name: symfony_nginx
+    volumes:
+      - '../:/var/www'
+      - './services/nginx:/etc/nginx/conf.d'
+      - './services/nginx/logs:/var/log/nginx'
+      - './services/nginx/data:/opt/data'
+    working_dir: '/var/www'
+    networks:
+      symfony_net:
+        ipv4_address: '172.77.0.80'
+
+  symfony_php-fpm:
+    build:
+      context: services/php-fpm
+      args:
+        USER: user
+    container_name: symfony_php-fpm
+    restart: always
+    volumes:
+      - '../:/var/www'
+      - './services/php-fpm:/usr/local/etc/php'
+    environment:
+      XDEBUG_CONFIG: "remote_host=172.77.0.1 remote_enable=1 remote_autostart=off remote_port=9000"
+      PHP_IDE_CONFIG: 'serverName=Docker'
+    networks:
+      symfony_net:
+
+  symfony_postgres:
+    image: postgres:11.5
+    container_name: symfony_postgres
+    restart: always
+    volumes:
+      - './services/postgres/data:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: secret
+    ports:
+      - '5432:5432'
+    networks:
+      symfony_net:
+
+  symfony_rabbitmq:
+    image: rabbitmq:3.8.6-management
+    container_name: symfony_rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: secret
+    ports:
+    - '15672:15672'
+    networks:
+      symfony_net:
+
+networks:
+  symfony_net:
+    ipam:
+      config:
+        - subnet: 172.77.0.0/16
+#    external:
+#      name: common_symfony
