@@ -21,7 +21,9 @@ services:
       - './services/nginx:/etc/nginx/conf.d'
       - './services/nginx/logs:/var/log/nginx'
       - './services/nginx/data:/opt/data'
-    working_dir: '/var/www'
+    working_dir: '/var/www/public'
+    ports:
+    - '800:80'
     networks:
       symfony_net:
         ipv4_address: '172.77.0.80'
@@ -72,5 +74,3 @@ networks:
     ipam:
       config:
         - subnet: 172.77.0.0/16
-#    external:
-#      name: common_symfony

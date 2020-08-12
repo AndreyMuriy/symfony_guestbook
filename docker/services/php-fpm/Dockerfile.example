@@ -48,6 +48,12 @@ RUN echo "Install Symfony CLI" \
     && wget https://get.symfony.com/cli/installer -O - | bash \
     && mv /root/.symfony/bin/symfony /usr/local/bin/symfony
 
+RUN echo "Install GIT" \
+    && apt-get clean && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
 ARG USER=root
 RUN groupadd -g 1000 ${USER} || echo "Group already exists."
 RUN useradd -u 1000 -ms /bin/bash -g ${USER} ${USER} || echo "User already exists."
