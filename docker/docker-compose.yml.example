@@ -57,6 +57,13 @@ services:
     networks:
       symfony_net:
 
+  symfony_redis:
+    image: redis:6.0.6-alpine
+    container_name: symfony_redis
+    restart: always
+    networks:
+      symfony_net:
+
   symfony_rabbitmq:
     image: rabbitmq:3.8.6-management
     container_name: symfony_rabbitmq
