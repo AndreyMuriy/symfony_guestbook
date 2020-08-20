@@ -51,7 +51,7 @@ class ConferenceController extends AbstractController
     /**
      * Show conference info
      *
-     * @Route("/conference/{id}", name="conference")
+     * @Route("/conference/{slug}", name="conference")
      * @param Request $request
      * @param Conference $conference
      * @param CommentRepository $commentRepository
@@ -66,7 +66,8 @@ class ConferenceController extends AbstractController
         Conference $conference,
         CommentRepository $commentRepository,
         ConferenceRepository $conferenceRepository
-    ) {
+    )
+    {
         $offset = max(0, $request->query->getInt('offset', 0));
         $paginator = $commentRepository->getCommentPaginator($conference, $offset);
 
